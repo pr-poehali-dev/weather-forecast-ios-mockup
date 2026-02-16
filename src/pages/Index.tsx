@@ -36,6 +36,7 @@ const mockWeatherData = {
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState('current');
+  const [activeScreen, setActiveScreen] = useState('weather');
   const [location, setLocation] = useState('Москва');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -64,25 +65,27 @@ export default function Index() {
       <div className="absolute inset-0 bg-black/5"></div>
       
       <div className="relative z-10 max-w-md mx-auto px-4 py-6 pb-28">
-        <div className="flex items-center justify-between mb-6 animate-fade-in">
-          <div className="flex items-center gap-2">
-            <Icon name="MapPin" className="text-white" size={20} />
-            <select 
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="bg-white/20 backdrop-blur-md text-white text-lg font-medium px-3 py-1 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-white/40"
-            >
-              {mockWeatherData.locations.map((loc) => (
-                <option key={loc} value={loc} className="text-gray-800">{loc}</option>
-              ))}
-            </select>
-          </div>
-          <button className="p-2 bg-white/20 backdrop-blur-md rounded-full hover:bg-white/30 transition-all">
-            <Icon name="Settings" className="text-white" size={20} />
-          </button>
-        </div>
+        {activeScreen === 'weather' && (
+          <>
+            <div className="flex items-center justify-between mb-6 animate-fade-in">
+              <div className="flex items-center gap-2">
+                <Icon name="MapPin" className="text-white" size={20} />
+                <select 
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="bg-white/20 backdrop-blur-md text-white text-lg font-medium px-3 py-1 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-white/40"
+                >
+                  {mockWeatherData.locations.map((loc) => (
+                    <option key={loc} value={loc} className="text-gray-800">{loc}</option>
+                  ))}
+                </select>
+              </div>
+              <button className="p-2 bg-white/20 backdrop-blur-md rounded-full hover:bg-white/30 transition-all">
+                <Icon name="Settings" className="text-white" size={20} />
+              </button>
+            </div>
 
-        <div className={`bg-gradient-to-br ${getGradientClass()} rounded-3xl p-8 mb-6 shadow-2xl animate-slide-up relative overflow-hidden`}>
+            <div className={`bg-gradient-to-br ${getGradientClass()} rounded-3xl p-8 mb-6 shadow-2xl animate-slide-up relative overflow-hidden`}>
           <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl animate-float"></div>
           <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '1.5s' }}></div>
           
@@ -231,24 +234,85 @@ export default function Index() {
             </Card>
           </TabsContent>
         </Tabs>
+          </>
+        )}
+
+        {activeScreen === 'map' && (
+          <div className="animate-fade-in">
+            <Card className="bg-white/20 backdrop-blur-md border-0 p-8 rounded-2xl text-center">
+              <Icon name="Map" className="text-white mx-auto mb-4" size={80} />
+              <h2 className="text-white text-2xl font-semibold mb-2">Карта погоды</h2>
+              <p className="text-white/80">Интерактивная карта с погодными условиями</p>
+            </Card>
+          </div>
+        )}
+
+        {activeScreen === 'cities' && (
+          <div className="animate-fade-in space-y-4">
+            <h2 className="text-white text-2xl font-semibold mb-4">Мои города</h2>
+            {mockWeatherData.locations.map((city, idx) => (
+              <Card key={idx} className="bg-white/20 backdrop-blur-md border-0 p-6 rounded-2xl hover:bg-white/30 transition-all cursor-pointer">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-white font-semibold text-lg">{city}</h3>
+                    <p className="text-white/70 text-sm">Солнечно, {20 + idx}°</p>
+                  </div>
+                  <Icon name="Sun" className="text-white" size={32} />
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {activeScreen === 'settings' && (
+          <div className="animate-fade-in">
+            <h2 className="text-white text-2xl font-semibold mb-6">Настройки</h2>
+            <Card className="bg-white/20 backdrop-blur-md border-0 p-6 rounded-2xl space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-white">Единицы температуры</span>
+                <span className="text-white/80">°C</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-white">Уведомления</span>
+                <span className="text-white/80">Вкл</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-white">Автоопределение местоположения</span>
+                <span className="text-white/80">Вкл</span>
+              </div>
+            </Card>
+          </div>
+        )}
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 bg-white/10 backdrop-blur-xl border-t border-white/20 z-20">
         <div className="max-w-md mx-auto px-8 py-4">
           <div className="flex items-center justify-around">
-            <button className="flex flex-col items-center gap-1 text-white hover:text-white/80 transition-all">
+            <button 
+              onClick={() => setActiveScreen('weather')}
+              className={`flex flex-col items-center gap-1 transition-all ${activeScreen === 'weather' ? 'text-white' : 'text-white/60 hover:text-white'}`}
+            >
               <Icon name="Cloud" size={24} />
               <span className="text-xs">Погода</span>
             </button>
-            <button className="flex flex-col items-center gap-1 text-white/60 hover:text-white transition-all">
+            <button 
+              onClick={() => setActiveScreen('map')}
+              className={`flex flex-col items-center gap-1 transition-all ${activeScreen === 'map' ? 'text-white' : 'text-white/60 hover:text-white'}`}
+            >
               <Icon name="Map" size={24} />
               <span className="text-xs">Карта</span>
             </button>
-            <button className="flex flex-col items-center gap-1 text-white/60 hover:text-white transition-all">
+            <button 
+              onClick={() => setActiveScreen('cities')}
+              className={`flex flex-col items-center gap-1 transition-all ${activeScreen === 'cities' ? 'text-white' : 'text-white/60 hover:text-white'}`}
+            >
               <Icon name="MapPin" size={24} />
               <span className="text-xs">Города</span>
             </button>
-            <button className="flex flex-col items-center gap-1 text-white/60 hover:text-white transition-all">
+            <button 
+              onClick={() => setActiveScreen('settings')}
+              className={`flex flex-col items-center gap-1 transition-all ${activeScreen === 'settings' ? 'text-white' : 'text-white/60 hover:text-white'}`}
+            >
               <Icon name="Settings" size={24} />
               <span className="text-xs">Настройки</span>
             </button>
